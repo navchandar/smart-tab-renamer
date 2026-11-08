@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Rename Tab</title>
+  <link rel="stylesheet" href="rename-dialog.css">
+</head>
+<body>
+  <div class="dialog-container">
+    <div class="dialog-header">
+      <div class="brand">
+        <img src="../icons/icon.svg" class="logo" alt="Icon">
+        <h3>Rename Tab</h3>
+      </div>
+      <span id="containerBadge" class="badge">Default</span>
+    </div>
+
+    <div class="field-group">
+      <label for="currentUrl">Page URL</label>
+      <input type="text" id="currentUrl" readonly spellcheck="false">
+    </div>
+
+    <div class="field-group">
+      <label for="customTitleInput">Custom Tab Name</label>
+      <input type="text" id="customTitleInput" placeholder="Enter custom title..." autofocus>
+      <div class="hint">Leaves original website intact if blank.</div>
+    </div>
+
+    <div class="actions">
+      <button id="clearBtn" class="btn btn-secondary">Clear</button>
+      <button id="saveBtn" class="btn btn-primary">Apply</button>
+    </div>
+
+    <div class="footer-links">
+      <a href="#" id="openOptionsLink">Open All Rules & Settings →</a>
+    </div>
+  </div>
+  <script src="rename-dialog.js"></script>
+</body>
+</html>

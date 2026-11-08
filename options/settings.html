@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Tab Renamer - Settings</title>
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <img src="../icons/icon.svg" alt="Logo" class="logo">
+        <div>
+          <h1>Smart Tab Renamer</h1>
+          <p class="subtitle">Fast, persistent tab title automation & organization</p>
+        </div>
+      </div>
+      <div class="header-badges">
+        <span class="badge" id="syncStatusBadge">Sync: Active</span>
+        <span class="badge badge-info" id="ruleCountBadge">0 Rules</span>
+      </div>
+    </header>
+
+    <main class="app-content">
+      <!-- Section 1: Quick Rules (Non-technical friendly) -->
+      <section class="card">
+        <div class="card-header">
+          <h2>Quick Rules</h2>
+          <p class="section-desc">Create fast site-to-title rules without dealing with regular expressions.</p>
+        </div>
+        <form id="quickRuleForm" class="grid-form">
+          <div class="form-group">
+            <label for="quickSite">Match Domain or Site</label>
+            <input type="text" id="quickSite" placeholder="e.g. github.com or jira.company.com" required>
+          </div>
+          <div class="form-group">
+            <label for="quickTitle">Custom Title</label>
+            <input type="text" id="quickTitle" placeholder="e.g. GitHub" required>
+          </div>
+          <div class="form-group">
+            <label for="quickContainer">Container Scope</label>
+            <select id="quickContainer">
+              <option value="any">Any Container</option>
+            </select>
+          </div>
+          <div class="form-group submit-group">
+            <button type="submit" class="btn btn-primary" id="addQuickRuleBtn">Add Quick Rule</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Section 2: Advanced Rules Engine -->
+      <section class="card">
+        <div class="card-header flex-between">
+          <div>
+            <h2>Advanced Rules</h2>
+            <p class="section-desc">Regex, path prefixes, template tokens (%title%, %container%), and priority ordering.</p>
+          </div>
+          <button class="btn btn-secondary" id="toggleAdvFormBtn">+ Create Advanced Rule</button>
+        </div>
+
+        <!-- Hidden / Collapsible Advanced Rule Form -->
+        <div id="advRuleFormContainer" class="collapsible-panel hidden">
+          <form id="advRuleForm" class="adv-form">
+            <div class="form-row">
+              <div class="form-group col-3">
+                <label for="advType">Rule Type</label>
+                <select id="advType">
+                  <option value="exact">Exact URL (Priority 10)</option>
+                  <option value="prefix">Path Prefix (Priority 20)</option>
+                  <option value="domain">Domain (Priority 30)</option>
+                  <option value="subdomain">Subdomain Wildcard (Priority 40)</option>
+                  <option value="regex">Regular Expression (Priority 50)</option>
+                </select>
+              </div>
+              <div class="form-group col-6">
+                <label for="advPattern">Match Pattern</label>
+                <input type="text" id="advPattern" placeholder="e.g. https://jira.com/browse/HVS-(\d+)" required>
+                <div class="field-error" id="advPatternError"></div>
+              </div>
+              <div class="form-group col-3">
+                <label for="advContainer">Container</label>
+                <select id="advContainer">
+                  <option value="any">Any Container</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-8">
+                <label for="advReplacement">Title Replacement Template</label>
+                <input type="text" id="advReplacement" placeholder="e.g. [%container%] Ticket #$1 - %title%" required>
+                <div class="token-helper">
+                  Tokens: <code>%title%</code> <code>%hostname%</code> <code>%path%</code> <code>%container%</code> <code>$1..$9</code>
+                </div>
+              </div>
+              <div class="form-group col-4 submit-group">
+                <button type="submit" class="btn btn-primary" id="saveAdvRuleBtn">Save Rule</button>
+                <button type="button" class="btn btn-secondary" id="cancelAdvRuleBtn">Cancel</button>
+              </div>
+            </div>
+
+            <!-- Live Rule Testing Sandbox -->
+            <div class="test-sandbox">
+              <div class="sandbox-title">Interactive Regex & Template Tester</div>
+              <div class="form-row">
+                <div class="form-group col-6">
+                  <input type="text" id="testInputUrl" placeholder="Paste sample URL to test...">
+                </div>
+                <div class="form-group col-6">
+                  <input type="text" id="testInputTitle" placeholder="Sample webpage <title>...">
+                </div>
+              </div>
+              <div class="sandbox-result">
+                <span>Resulting Title:</span>
+                <strong id="testLiveOutput">(enter pattern and test values)</strong>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- Rules Filter Toolbar -->
+        <div class="filter-toolbar">
+          <input type="text" id="searchRulesInput" placeholder="Search rules by pattern or title...">
+          <select id="filterTypeSelect">
+            <option value="all">All Match Types</option>
+            <option value="exact">Exact URL</option>
+            <option value="prefix">Path Prefix</option>
+            <option value="domain">Domain</option>
+            <option value="subdomain">Subdomain</option>
+            <option value="regex">Regex</option>
+          </select>
+          <select id="filterContainerSelect">
+            <option value="all">All Containers</option>
+          </select>
+        </div>
+
+        <!-- Rules Table -->
+        <div class="table-responsive">
+          <table class="rules-table">
+            <thead>
+              <tr>
+                <th style="width: 60px;">Active</th>
+                <th style="width: 110px;">Type</th>
+                <th>Pattern</th>
+                <th>Replacement Template</th>
+                <th style="width: 110px;">Container</th>
+                <th style="width: 80px;">Priority</th>
+                <th style="width: 140px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="rulesTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Section 3: Preferences & Administration -->
+      <section class="card">
+        <div class="card-header">
+          <h2>Preferences</h2>
+          <p class="section-desc">Manage backups, bookmark integrations, and prefs.</p>
+        </div>
+
+        <div class="pref-grid">
+		  <label class="toggle-control">
+			<input type="checkbox" id="prefBookmarkNaming">
+			<span class="toggle-slider"></span>
+			<span class="toggle-label">Enable Bookmark-Based Naming (falls back to bookmark title before rules)</span>
+		  </label>
+		  <label class="toggle-control">
+			<input type="checkbox" id="prefPersistentEnforcement" checked>
+			<span class="toggle-slider"></span>
+			<span class="toggle-label">Strict Mutation Enforcement (blocks SPAs like Jira/Teams from overwriting title)</span>
+		  </label>
+		  <div class="pref-row-control">
+			<div class="pref-label-group">
+			  <label for="prefAutoCleanDays" class="control-heading">Auto-clean Stale Tab Names</label>
+			  <p class="control-description">
+				Automatically delete tab renames for pages you haven't visited in a period.
+			  </p>
+			</div>
+			<div class="pref-input-wrapper">
+			  <input type="number" id="prefAutoCleanDays" min="0" max="365" step="1" value="30">
+			  <span class="input-suffix">days</span>
+			</div>
+		  </div>
+		</div>
+
+        <div class="admin-actions">
+          <div class="action-block">
+            <h3>Export Configuration</h3>
+            <p>Save all rules, templates, and preferences to a portable JSON file.</p>
+            <button class="btn btn-secondary" id="exportBtn">Export JSON</button>
+          </div>
+
+          <div class="action-block">
+            <h3>Import Configuration</h3>
+            <p>Restore rules from an exported JSON backup with schema verification.</p>
+            <input type="file" id="importFileInput" accept=".json" style="display:none">
+            <button class="btn btn-secondary" id="importBtn">Import JSON...</button>
+          </div>
+
+          <div class="action-block danger-block">
+            <h3>Reset Configuration</h3>
+            <p>Erase all custom rules and restore factory default settings.</p>
+            <button class="btn btn-danger" id="resetBtn">Reset All</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Shared & Options Scripts -->
+  <script src="../shared/storage.js"></script>
+  <script src="../shared/validators.js"></script>
+  <script src="../shared/templates.js"></script>
+  <script src="importer.js"></script>
+  <script src="exporter.js"></script>
+  <script src="settings.js"></script>
+</body>
+</html>

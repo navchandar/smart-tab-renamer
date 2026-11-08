@@ -1,0 +1,33 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="b" x1="80" y1="80" x2="430" y2="430" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4b38f3"/>
+      <stop offset="45%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#5fcdfc"/>
+    </linearGradient>
+    <linearGradient id="d" x1="250" y1="220" x2="430" y2="350" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fff"/>
+      <stop offset="100%" stop-color="#dbeafe"/>
+    </linearGradient>
+    <linearGradient id="c" x1="100" y1="100" x2="250" y2="250">
+      <stop offset="0%" stop-color="#fff" stop-opacity=".6"/>
+      <stop offset="100%" stop-color="#fff"/>
+    </linearGradient>
+    <radialGradient id="e">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </radialGradient>
+    <filter id="a" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-opacity=".18"/>
+    </filter>
+  </defs>
+  <g filter="url(#a)">
+    <path d="M96 128c0-18 14-32 32-32h88c14 0 22 4 32 14l34 34h102c18 0 32 14 32 32v176c0 18-14 32-32 32H128c-18 0-32-14-32-32Z" fill="url(#b)"/>
+    <path d="M120 120h100c12 0 18 2 25 10l20 20H120Z" fill="url(#c)"/>
+  </g>
+  <g filter="url(#a)">
+    <path d="M304 232h100c14 0 26 12 26 26v66c0 14-12 26-26 26H304l-54-59Z" fill="url(#d)"/>
+    <circle cx="386" cy="291" r="11" fill="url(#e)"/>
+    <circle cx="386" cy="291" r="5" fill="#00ff80"/>
+  </g>
+</svg>
