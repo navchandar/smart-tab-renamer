@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Smart Tab Renamer",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Rename browser tabs with intuitive rules, container support, and persistent title enforcement",
   "author": "navchandar",
   "homepage_url": "https://github.com/navchandar/smart-tab-renamer",
