@@ -4,7 +4,7 @@
  * and communicates persistent titles to content scripts.
  */
 (() => {
-  'use strict';
+  "use strict";
 
   class TabsManager {
     constructor() {
@@ -17,15 +17,21 @@
         this.tabStates.set(tabId, {
           manualName: null,
           calculatedTitle: null,
-          originalTitle: '',
-          url: ''
+          originalTitle: "",
+          url: "",
         });
       }
       return this.tabStates.get(tabId);
     }
 
     async resolveTabTitle(tab) {
-      if (!tab || !tab.id || !tab.url || tab.url.startsWith('about:') || tab.url.startsWith('moz-extension:')) {
+      if (
+        !tab ||
+        !tab.id ||
+        !tab.url ||
+        tab.url.startsWith("about:") ||
+        tab.url.startsWith("moz-extension:")
+      ) {
         return null;
       }
 
@@ -50,21 +56,32 @@
             return bookmarks[0].title;
           }
         } catch (err) {
-          console.warn('[SmartTabRenamer:TabsManager] Bookmark lookup error:', err);
+          console.warn(
+            "[SmartTabRenamer:TabsManager] Bookmark lookup error:",
+            err,
+          );
         }
       }
 
       // Tier 3: Apply Matching Rule
-      const containerName = await window.SmartTabContainers.getContainerName(tab.cookieStoreId);
-      const match = window.SmartTabRulesEngine.findMatchingRule(tab.url, tab.cookieStoreId);
+      const containerName = await window.SmartTabContainers.getContainerName(
+        tab.cookieStoreId,
+      );
+      const match = window.SmartTabRulesEngine.findMatchingRule(
+        tab.url,
+        tab.cookieStoreId,
+      );
 
       if (match) {
-        const resolvedTitle = window.SmartTabTemplates.resolve(match.rule.replacement, {
-          rawTitle: state.originalTitle || tab.title || '',
-          url: tab.url,
-          containerName,
-          regexMatches: match.regexMatches
-        });
+        const resolvedTitle = window.SmartTabTemplates.resolve(
+          match.rule.replacement,
+          {
+            rawTitle: state.originalTitle || tab.title || "",
+            url: tab.url,
+            containerName,
+            regexMatches: match.regexMatches,
+          },
+        );
         state.calculatedTitle = resolvedTitle;
         return resolvedTitle;
       }
@@ -78,8 +95,8 @@
       if (!title) return;
       try {
         await browser.tabs.sendMessage(tabId, {
-          action: 'ENFORCE_TITLE',
-          payload: { title }
+          action: "ENFORCE_TITLE",
+          payload: { title },
         });
       } catch (err) {
         // Tab may still be loading or restricted; benign failure caught cleanly
@@ -90,15 +107,15 @@
       const state = this.getTabState(tabId);
       state.manualName = customTitle;
       await window.SmartTabStorage.setManualName(url, customTitle);
-      
+
       if (customTitle) {
         await this.applyTitleToTab(tabId, customTitle);
       } else {
         // Clear: recalculate rules or revert to original
         const restored = await this.resolveTabTitle({ id: tabId, url });
         await browser.tabs.sendMessage(tabId, {
-          action: 'CLEAR_TITLE',
-          payload: { fallbackTitle: restored || state.originalTitle }
+          action: "CLEAR_TITLE",
+          payload: { fallbackTitle: restored || state.originalTitle },
         });
       }
     }

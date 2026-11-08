@@ -4,7 +4,7 @@
  * Evaluates in priority order: Exact URL > Path Prefix > Domain > Subdomain Wildcard > Regex.
  */
 (() => {
-  'use strict';
+  "use strict";
 
   class RulesEngine {
     constructor() {
@@ -22,12 +22,15 @@
       this.regexCache.clear();
 
       // Precompile regexes for immediate execution
-      this.rules.forEach(rule => {
-        if (rule.enabled && rule.type === 'regex') {
+      this.rules.forEach((rule) => {
+        if (rule.enabled && rule.type === "regex") {
           try {
             this.regexCache.set(rule.id, new RegExp(rule.pattern));
           } catch (err) {
-            console.error(`[SmartTabRenamer:Rules] Failed to compile regex for rule ${rule.id}:`, err);
+            console.error(
+              `[SmartTabRenamer:Rules] Failed to compile regex for rule ${rule.id}:`,
+              err,
+            );
           }
         }
       });
@@ -39,8 +42,12 @@
      * @param {string} cookieStoreId Tab's container store ID
      * @returns {Object|null} Matching rule and regex capture array if any.
      */
-    findMatchingRule(rawUrl, cookieStoreId = 'firefox-default') {
-      if (!rawUrl || rawUrl.startsWith('about:') || rawUrl.startsWith('moz-extension:')) {
+    findMatchingRule(rawUrl, cookieStoreId = "firefox-default") {
+      if (
+        !rawUrl ||
+        rawUrl.startsWith("about:") ||
+        rawUrl.startsWith("moz-extension:")
+      ) {
         return null;
       }
 
@@ -51,9 +58,13 @@
         return null;
       }
 
-      const activeRules = this.rules.filter(r => {
+      const activeRules = this.rules.filter((r) => {
         if (!r.enabled) return false;
-        if (r.containerId && r.containerId !== 'any' && r.containerId !== cookieStoreId) {
+        if (
+          r.containerId &&
+          r.containerId !== "any" &&
+          r.containerId !== cookieStoreId
+        ) {
           return false;
         }
         return true;
@@ -67,7 +78,7 @@
         if (matchData.isMatch) {
           return {
             rule,
-            regexMatches: matchData.regexMatches || []
+            regexMatches: matchData.regexMatches || [],
           };
         }
       }
@@ -79,32 +90,33 @@
       const pattern = rule.pattern.trim();
 
       switch (rule.type) {
-        case 'exact': {
+        case "exact": {
           return { isMatch: rawUrl === pattern };
         }
 
-        case 'prefix': {
+        case "prefix": {
           return { isMatch: rawUrl.startsWith(pattern) };
         }
 
-        case 'domain': {
+        case "domain": {
           const host = parsedUrl.hostname.toLowerCase();
-          const cleanPattern = pattern.toLowerCase().replace(/^www\./, '');
-          const cleanHost = host.replace(/^www\./, '');
+          const cleanPattern = pattern.toLowerCase().replace(/^www\./, "");
+          const cleanHost = host.replace(/^www\./, "");
           return { isMatch: cleanHost === cleanPattern };
         }
 
-        case 'subdomain': {
+        case "subdomain": {
           const host = parsedUrl.hostname.toLowerCase();
           let baseDomain = pattern.toLowerCase();
-          if (baseDomain.startsWith('*.')) {
+          if (baseDomain.startsWith("*.")) {
             baseDomain = baseDomain.slice(2);
           }
-          const isMatch = host === baseDomain || host.endsWith('.' + baseDomain);
+          const isMatch =
+            host === baseDomain || host.endsWith("." + baseDomain);
           return { isMatch };
         }
 
-        case 'regex': {
+        case "regex": {
           let compiled = this.regexCache.get(rule.id);
           if (!compiled) {
             try {
@@ -117,7 +129,7 @@
           const matches = compiled.exec(rawUrl);
           return {
             isMatch: Boolean(matches),
-            regexMatches: matches ? Array.from(matches) : []
+            regexMatches: matches ? Array.from(matches) : [],
           };
         }
 
